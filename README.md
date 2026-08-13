@@ -1,58 +1,55 @@
 # DBMS-project
 
 
-USER
-│
-├── 🔐 Authentication
-│   ├── Login
-│   ├── Register
+## 👤 User Features
 
+### 1. 🔐 Authentication
 
-│
+* Login
+* Register
 
-│
-├── 👤 My Profile
-│   ├── View Personal Details
-│   ├── Edit Personal Details
-│   └── Change Password
-│
+### 2. 👤 My Profile
 
-├── 💳 My Accounts
-│   ├── View Account Details
-│   ├── Account Number
-│   ├── Current Balance
-│
+* View Personal Details
+* Edit Personal Details
+* Change Password
 
-├── 💸 Banking
-│   ├── Deposit
-│   ├── Withdraw
-│   ├── Transfer Money
-│   
+### 3. 💳 My Accounts
 
-│
-│
-├── 📜 Transactions
-│   ├── Transaction History
-│   ├── Search Transactions
-│   ├── Filter by Date
-│   ├── Filter by Type
-│   └── View Transaction Details
+* View Account Details
+* View Account Number
+* View Current Balance
 
+### 4. 💸 Banking
 
-├── 💰 Financial Overview
-│   ├── Current Balance
-│   ├── Total Credits
-│   ├── Total Debits
-│   └── Net Movement
-│
+* Deposit
+* Withdraw
+* Transfer Money
 
-├── 📈 Balance Analysis
-│   └── Monthly Balance Comparison
-│
+### 5. 📜 Transactions
 
-├── 💸 Transaction Analysis
-│   ├── Average Transaction
-│   └── Largest Transaction
+* Transaction History
+* Search Transactions
+* Filter by Date
+* Filter by Type
+* View Transaction Details
+
+### 6. 💰 Financial Overview
+
+* Current Balance
+* Total Credits
+* Total Debits
+* Net Movement
+
+### 7. 📈 Balance Analysis
+
+* Monthly Balance Comparison
+
+### 8. 💸 Transaction Analysis
+
+* Average Transaction
+* Largest Transaction
+
 
 
 
