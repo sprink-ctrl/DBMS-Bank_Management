@@ -7,6 +7,7 @@ USER
 │   ├── Login
 │   ├── Register
 
+
 │
 
 │
@@ -15,16 +16,19 @@ USER
 │   ├── Edit Personal Details
 │   └── Change Password
 │
+
 ├── 💳 My Accounts
 │   ├── View Account Details
 │   ├── Account Number
 │   ├── Current Balance
 │
+
 ├── 💸 Banking
 │   ├── Deposit
 │   ├── Withdraw
 │   ├── Transfer Money
 │   
+
 │
 │
 ├── 📜 Transactions
@@ -34,18 +38,22 @@ USER
 │   ├── Filter by Type
 │   └── View Transaction Details
 
+
 ├── 💰 Financial Overview
 │   ├── Current Balance
 │   ├── Total Credits
 │   ├── Total Debits
 │   └── Net Movement
 │
+
 ├── 📈 Balance Analysis
 │   └── Monthly Balance Comparison
 │
+
 ├── 💸 Transaction Analysis
 │   ├── Average Transaction
 │   └── Largest Transaction
+
 
 
 ## 🛡️ Admin Features
