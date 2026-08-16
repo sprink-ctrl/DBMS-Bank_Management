@@ -22,10 +22,6 @@ for i in a:
         continue
 
 
-
-
-
-
 crsr.execute("SELECT * FROM users")    
 if len(crsr.fetchall())==0: 
     f = open('users.csv', 'r', newline='')
@@ -33,8 +29,6 @@ if len(crsr.fetchall())==0:
     for i in rdr:   
         crsr.execute(f"INSERT INTO users VALUES ('{i[0]}','{i[1]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
     f.close()
-
-
 
 
 crsr.execute("SELECT * FROM accounts")    
@@ -64,8 +58,6 @@ if len(crsr.fetchall())==0:
     f.close()
 
 
-
-
 crsr.execute("SELECT * FROM admin")    
 if len(crsr.fetchall())==0: 
     f = open('admin.csv', 'r', newline='')
@@ -73,8 +65,6 @@ if len(crsr.fetchall())==0:
     for i in rdr:   
         crsr.execute(f"INSERT INTO admin VALUES ('{i[0]}','{i[1]}','{i[2]}','{i[3]}')")
     f.close()
-
-
 
 
 db.commit()
