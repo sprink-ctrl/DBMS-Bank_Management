@@ -8,7 +8,8 @@ db = mysql.connector.connect(
     password ='1234',
     database='bank_dbms'
 )
-
+user = None
+name =None
 crsr = db.cursor()
 
 # -------------------------
@@ -29,6 +30,19 @@ users = {}
 # Functions
 # -------------------------
 #region show_frame
+def show_dashboard():
+    welcome_message_widget()
+    balance_widget_dashboard()
+    transact_widget_dashboard()
+    frame_border.place_forget()
+    login_frame.place_forget()
+    navbar.place(relwidth=1,)
+    welcome_message.place(relwidth=0.7,rely=0.12,relx=0.2)
+    balance_dashboard_widget.place(relwidth=0.2,rely=0.33,relx=0.2)
+    transaction_dashboard_widget.place(relwidth=0.35,rely=0.55,relx=0.2)
+    navbar.tkraise()
+
+
 def show_login():
     register_frame.place_forget()
     frame_border.place_forget()
@@ -53,6 +67,17 @@ def show_adminlogin():
     admin_login_frame.place(relx=0.5, rely=0.43, anchor="center")
     frame_border.place(height=400,width=350,relx=0.5, rely=0.45,anchor="center")
     admin_login_frame.tkraise()
+
+def show_accounts():
+    accounts_page()
+    for widget in root.winfo_children():
+        if widget.winfo_class() == 'Frame':
+            widget.place_forget()
+    navbar.place(relwidth=1)
+    profile_account.place(relwidth=0.3,rely=0.13,relx=0.02,relheight=0.78)
+    account_profile.place(relwidth=0.6,rely=0.13,relx=0.33,relheight=0.3)
+    profile_account.tkraise()
+
 #endregion
 
 
@@ -73,6 +98,12 @@ def login():
         if (password,) in pass_records:
             login_username.delete(0,tk.END)
             login_password.delete(0,tk.END)
+            global user
+            global name
+            user = username
+            crsr.execute(f'Select name from users where username="{user}"')
+            name_abc = crsr.fetchall()
+            name = name_abc[0][0].split()[0]
             show_dashboard()
             return
 
@@ -81,8 +112,7 @@ def login():
     else:
         messagebox.showwarning('',"Invalid Username")
 
-def login_successful():
-    print("VALID")
+
 
 
 def check_username_validity(event):
@@ -419,19 +449,110 @@ tk.Button(
 
  #endregion 
 
-def show_dashboard():
-    frame_border.place_forget()
-    login_frame.place_forget()
-    navbar.place(relwidth=1,)
-    navbar.tkraise()
+#region welcome_mesage_dashboard
+
+welcome_message = tk.Frame(root, bg="#0a2d56", height=300,width=400)
 
 
+def welcome_message_widget():
+    global name
+    tk.Label(
+        welcome_message,
+        text=f'Welcome Back, {name}!',
+        font=("Trebuchet MS", 32, "bold"),
+        bg='#0a2d56',
+        fg='#E3D9F2',
+        anchor='w'
+    ).grid(row=0,column=0,padx=10,pady=(10,0))
 
+    tk.Label(
+            welcome_message,
+            text='Your financial overview at a glance.',
+            font=("Trebuchet MS", 12, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=1,column=0,padx=10,sticky='w',pady=(0,30))
+
+#endregion
+#region balance_dashboard_widget
+balance_dashboard_widget = tk.Frame(root, bg="#0a2d56", height=300,width=100)
+def balance_widget_dashboard():
+    global user
+    crsr.execute(f'Select balance from accounts where username="{user}"')
+    bal = crsr.fetchall()[0][0]
+    
+    tk.Label(
+        balance_dashboard_widget,
+        text='Total Balance',
+        font=("Trebuchet MS", 16, "bold"),
+        bg='#0a2d56',
+        fg='#E3D9F2',
+        anchor='w'
+    ).grid(row=0,column=0,padx=10,pady=(10,5),sticky='w')
+
+    tk.Label(
+            balance_dashboard_widget,
+            text=f'₹ {bal}',
+            font=("Trebuchet MS", 26, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=1,column=0,padx=10,sticky='w',pady=(0,30))
+
+    
+#endregion
+
+#region transaction_dashboard_widget
+    
+transaction_dashboard_widget = tk.Frame(root, bg="#0a2d56", height=300,width=100)
+def transact_widget_dashboard():
+    
+    
+    tk.Label(
+        transaction_dashboard_widget,
+        text='Recent Transactions ',
+        font=("Trebuchet MS", 16, "bold"),
+        bg='#0a2d56',
+        fg='#E3D9F2',
+        anchor='w'
+    ).grid(row=0,column=0,padx=10,pady=(10,5),sticky='w')
+
+    tk.Label(
+            transaction_dashboard_widget,
+            text='Transaction 1',
+            font=("Trebuchet MS", 26, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=1,column=0,padx=10,sticky='w',pady=(0,30))
+    tk.Label(
+            transaction_dashboard_widget,
+            text='Transaction 2',
+            font=("Trebuchet MS", 16, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=2,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+            transaction_dashboard_widget,
+            text='Transaction 3',
+            font=("Trebuchet MS", 16, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=3,column=0,padx=10,pady=(10,5),sticky='w')
+
+
+#endregion
+
+
+#region nav_frame
 # NAVIGATION FRAME
 navbar = tk.Frame(root, bg="#043565", height=60)
 tk.Button(
     navbar,
-    text="Manga Bank🥭",
+    text="🥭Manga Bank         🏚️",
     width=20,
     command=show_dashboard,
     bg='#043565',
@@ -439,64 +560,281 @@ tk.Button(
     fg='#E3D9F2',
     relief='solid',
     borderwidth=0,
-    anchor='w'
-).grid(row=0, column=0,  pady=15,sticky='w',padx=10)
+    anchor='w',
+    activeforeground='#fdc132',
+    activebackground='#043565'
+).grid(row=0, column=0,  pady=15,sticky='w',padx=(0,32))
 
 tk.Button(
     navbar,
     text="Accounts🧾",
-    width=20,
-    command=show_dashboard,
+    width=10,
+    command=show_accounts,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
     relief='solid',
     borderwidth=0,
-    anchor='w'
-).grid(row=0, column=1,  pady=15,sticky='w',padx=5)
+    anchor='w',
+    activeforeground='#fdc132',
+    activebackground='#043565'
+).grid(row=0, column=1,  pady=15,sticky='w',padx=50)
 
 tk.Button(
     navbar,
     text="Banking💵",
-    width=20,
+    width=10,
     command=show_dashboard,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
     relief='solid',
     borderwidth=0,
-    anchor='w'
-).grid(row=0, column=2,  pady=15,sticky='w',padx=5)
+    anchor='w',
+    activeforeground='#fdc132',
+    activebackground='#043565'
+).grid(row=0, column=2,  pady=15,sticky='w',padx=50)
 
 tk.Button(
     navbar,
     text="Transactions💲",
-    width=20,
+    width=13,
     command=show_dashboard,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
     relief='solid',
     borderwidth=0,
-    anchor='w'
-).grid(row=0, column=3,  pady=15,sticky='w',padx=5)
+    anchor='w',
+    activeforeground='#fdc132',
+    activebackground='#043565'
+).grid(row=0, column=3,  pady=15,sticky='w',padx=50)
 
 tk.Button(
     navbar,
     text="Analytics📈",
-    width=20,
+    width=10,
     command=show_dashboard,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
     relief='solid',
     borderwidth=0,
-    anchor='w'
-).grid(row=0, column=4,  pady=15,sticky='w',padx=5)
+    anchor='w',
+    activeforeground='#fdc132',
+    activebackground='#043565'
+).grid(row=0, column=4,  pady=15,sticky='w',padx=50)
+
+
+#endregion
+
+
+profile_account = tk.Frame(root, bg="#0a2d56",)
+account_profile = tk.Frame(root, bg="#0a2d56",)
+
+
+def accounts_page():
+    global user
+    crsr.execute(f' SELECT * from users where username="{user}"')
+    a = crsr.fetchall()
+    tk.Label(
+                profile_account,
+                text='USER PROFILE',
+                font=("Trebuchet MS", 15, "bold"),
+                bg='#0a2d56',
+                fg='#fdc132',
+                anchor='center'
+            ).grid(row=0,column=0,columnspan=2,padx=10,pady=(10,0),sticky='w')
+    tk.Label(
+            profile_account,
+            text='🤵',
+            font=("Trebuchet MS", 80, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=1,column=0,columnspan=2,padx=10,pady=(10,0),sticky='nsew')
+
+    tk.Label(
+            profile_account,
+            text=f'{a[0][1]}',
+            font=("Trebuchet MS", 24, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=2,column=0,columnspan=2,padx=10,pady=(5,5),sticky='nsew')
+
+    tk.Label(
+                profile_account,
+                text=f'Username:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=3,column=0,padx=10,pady=(10,5),sticky='nw')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][0]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=3,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'Phone:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=4,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][3]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=4,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'Email:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=5,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][2]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=5,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'Date of Birth:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=6,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][5]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=6,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'Address:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=7,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][4].split(',')[0]}\n{a[0][4].split(',')[1]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=7,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'Account Since:',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=8,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account,
+                text=f'{a[0][7]}',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=8,column=1,padx=10,pady=(10,5),sticky='w')
+
+
+    #####################################################################################\
+    
+    crsr.execute(f' SELECT * from accounts where username="{user}"')
+    a = crsr.fetchall()
+    tk.Label(
+                account_profile,
+                text=f'ACCOUNT PROFILE',
+                font=("Trebuchet MS", 15, "bold"),
+                bg='#0a2d56',
+                fg='#fdc132',
+                anchor='center'
+            ).grid(row=0,column=0,padx=10,pady=(10,5),sticky='w')
+    
+    tk.Label(
+                account_profile,
+                text=f'🏦{a[0][2].capitalize()} Account',
+                font=("Trebuchet MS", 32, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=1,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                account_profile,
+                text=f'{a[0][1]}',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=2,column=0,padx=10,pady=(10,0),sticky='w')
+
+    if a[0][4] == 'ACTIVE':
+        color_status='#00FF00'
+    else:
+        color_status='#FF7F7F'
+    tk.Label(
+                    account_profile,
+                    text=f'{a[0][4]}',
+                    font=("Trebuchet MS", 8, "bold"),
+                    bg='#0a2d56',
+                    fg=color_status,
+                    anchor='center'
+                ).grid(row=3,column=0,padx=10,pady=(0,5),sticky='w')
+
+    tk.Label(
+                account_profile,
+                text=f'Available Balance',
+                font=("Trebuchet MS", 15, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='e'
+            ).grid(row=1,column=1,padx=(200,0),pady=(5,5),sticky='e')
+    tk.Label(
+                    account_profile,
+                    text=f'₹{a[0][3]}',
+                    font=("Trebuchet MS", 24, "bold"),
+                    bg='#0a2d56',
+                    fg='#00FF00',
+                    anchor='e'
+                ).grid(row=2,column=1,padx=(200,0),pady=(5,5),sticky='e')
+    
+    
+    
+
+
+    
+    
 
 
 
 
+
+
+
+    
 
 
 
@@ -534,7 +872,7 @@ tk.Button(
 frame_border = tk.Frame(root,borderwidth=0,relief="groove",bg='#043565')
 frame_border.place(height=500,width=400,relx=0.5, rely=0.45,anchor="center")
 login_frame.place(relx=0.5, rely=0.43, anchor="center")
-login_frame.tkraise()
+login_frame.tkraise()    
 
 
 
