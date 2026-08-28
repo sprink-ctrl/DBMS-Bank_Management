@@ -1,5 +1,6 @@
 import mysql.connector
 import csv
+
 db = mysql.connector.connect(
     host='localhost',
     user='root',
@@ -11,7 +12,7 @@ a = [
     'CREATE DATABASE bank_dbms',
     'USE bank_dbms',
     'CREATE TABLE users( username VARCHAR(50) PRIMARY KEY, name VARCHAR(100) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone VARCHAR(10) UNIQUE NOT NULL, ADDRESS VARCHAR(200), dob DATE, password VARCHAR(100) NOT NULL, date_created DATETIME )',
-    ' CREATE TABLE accounts( username VARCHAR(50), account_no VARCHAR(16) PRIMARY KEY, account_type VARCHAR(15) NOT NULL, balance DECIMAL(20,2) DEFAULT 0 , status varchar(12) DEFAULT "ACTIVE", date_created DATETIME, FOREIGN KEY(username) REFERENCES users(username) )',
+    ' CREATE TABLE accounts( username VARCHAR(50), account_no VARCHAR(16) PRIMARY KEY, account_type VARCHAR(15) NOT NULL, balance DECIMAL(20,2) DEFAULT 0 , status varchar(12) DEFAULT "ACTIVE", date_created DATETIME, branch VARCHAR(100), IFSC VARCHAR(50), FOREIGN KEY(username) REFERENCES users(username) )',
     ' CREATE TABLE transactions (username VARCHAR(50), account_no VARCHAR(16) , transaction_type VARCHAR(15), amount DECIMAL(12,2) NOT NULL, balance_after DECIMAL(20,2), from_account VARCHAR(16), to_account VARCHAR(16), status VARCHAR(20) DEFAULT "SUCCESS", description VARCHAR(200), timestamp DATETIME, CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES users(username), CONSTRAINT fk_account FOREIGN KEY (account_no) REFERENCES accounts(account_no) ) ' , 
     ' CREATE TABLE admin ( admin_name VARCHAR(50) PRIMARY KEY, password VARCHAR(100) NOT NULL, email VARCHAR(100) NOT NULL, phone VARCHAR(10) NOT NULL )'
      ]
@@ -36,7 +37,7 @@ if len(crsr.fetchall())==0:
     f = open('accounts.csv', 'r', newline='')
     rdr = csv.reader(f)
     for i in rdr:   
-        crsr.execute(f"INSERT INTO accounts VALUES ('{i[0]}','{i[1]}','{i[2]}',{float(i[3])},'{i[4]}','{i[5]}')")
+        crsr.execute(f"INSERT INTO accounts VALUES ('{i[0]}','{i[1]}','{i[2]}',{float(i[3])},'{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
     f.close()
 
 
@@ -68,3 +69,5 @@ if len(crsr.fetchall())==0:
 
 
 db.commit()
+import ui
+ui.run()
