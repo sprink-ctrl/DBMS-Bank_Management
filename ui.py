@@ -34,8 +34,9 @@ def show_dashboard():
     welcome_message_widget()
     balance_widget_dashboard()
     transact_widget_dashboard()
-    frame_border.place_forget()
-    login_frame.place_forget()
+    for widget in root.winfo_children():
+            if widget.winfo_class() == 'Frame':
+                widget.place_forget()
     navbar.place(relwidth=1,)
     welcome_message.place(relwidth=0.7,rely=0.12,relx=0.2)
     balance_dashboard_widget.place(relwidth=0.2,rely=0.33,relx=0.2)
@@ -187,7 +188,7 @@ def admin_login():
     crsr.execute('select admin_name from admin')
     user_records = crsr.fetchall()
     if (username,) in user_records:
-        crsr.execute('Select password from admin')
+        crsr.execute(f'Select password from admin where admin_name="{username}"')
         pass_records = crsr.fetchall()
         if (password,) in pass_records:
             admin_login_username.delete(0,tk.END)
