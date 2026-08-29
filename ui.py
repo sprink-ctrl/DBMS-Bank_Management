@@ -97,7 +97,8 @@ def show_transactions():
 def admin_login_successful():
     print("VALID")
 
-
+def banking_fn():
+    banking.show_banking()
 
 #endregion
 
@@ -477,7 +478,7 @@ tk.Button(
     navbar,
     text="Banking💵",
     width=10,
-    command=show_dashboard,
+    command=banking_fn,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
@@ -1130,7 +1131,7 @@ frame_border.place(height=500,width=400,relx=0.5, rely=0.45,anchor="center")
 login_frame.place(relx=0.5, rely=0.43, anchor="center")
 login_frame.tkraise()    
 
-
+import banking
 
 
 root.configure(bg='#00305e')    

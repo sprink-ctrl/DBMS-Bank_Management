@@ -23,7 +23,7 @@ def login(login_username,login_password):
     crsr.execute('select username from users')
     user_records = crsr.fetchall()
     if (username,) in user_records:
-        crsr.execute('Select password from users')
+        crsr.execute(f'Select password from users where username = "{username}"')
         pass_records = crsr.fetchall()
         if (password,) in pass_records:
             login_username.delete(0,tk.END)
@@ -113,7 +113,7 @@ def register(register_username,register_name,register_email,register_dob,registe
                     messagebox.showwarning('',"Passwords do not match")
             else:
                 messagebox.showwarning('',"Fields cannot be empty")
-        except 'get_mysql_exception':
+        except:
             messagebox.showwarning('',"Something went wrong. Try checking date format")
     if a==False:
         messagebox.showwarning('',"Username already exists.")
