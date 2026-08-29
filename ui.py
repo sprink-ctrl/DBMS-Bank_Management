@@ -78,8 +78,8 @@ def show_accounts():
             widget.place_forget()
     navbar.place(relwidth=1)
     profile_account.place(relwidth=0.3,rely=0.13,relx=0.02,relheight=0.78)
-    account_profile.place(relwidth=0.6,rely=0.13,relx=0.33,relheight=0.3)
-    account_details.place(relwidth=0.6,rely=0.47,relx=0.33,relheight=0.29)
+    account_profile.place(relwidth=0.65,rely=0.13,relx=0.33,relheight=0.3)
+    account_details.place(relwidth=0.65,rely=0.47,relx=0.33,relheight=0.29)
     profile_account.tkraise()
 
 
@@ -90,11 +90,13 @@ def show_transactions():
                 widget.place_forget()
     navbar.place(relwidth=1)
     account_profile_transactions.place(relwidth=0.16,rely=0.13,relx=0.00,relheight=0.37)
-    transactions_page_frame.place(relwidth=0.8,rely=0.13,relx=0.169,relheight=0.78)
+    transactions_page_frame.place(relwidth=0.8,rely=0.13,relx=0.2,relheight=0.78)
+    transacations_page_filter_frame.place(relwidth=0.16,rely=0.501,relx=0.00,relheight=0.78)
     
 
 def admin_login_successful():
     print("VALID")
+
 
 
 #endregion
@@ -817,7 +819,9 @@ def accounts_page():
 
 account_profile_transactions= tk.Frame(root, bg="#0a2d56",)
 transactions_page_frame = tk.Frame(root, bg="#0a2d56",)
+transacations_page_filter_frame = tk.Frame(root, bg="#0a2d56",)
 def transactions_page():
+    global tree
     tk.Label(
                     account_profile_transactions,
                     text=f'ACCOUNT PROFILE',
@@ -929,11 +933,12 @@ def transactions_page():
    
     style.configure("Treeview",
                     background='#0a2d56',      
-                    foreground="#86ADE5",        
+                    foreground="#E3D9F2",        
                     fieldbackground='#0a2d56',
                     borderwidth=0,
                     font=("Trebuchet MS", 12),
-                    relief="flat") 
+                    relief="flat",
+                    rowheight=35) 
 
 
     style.configure("Treeview.Heading",
@@ -952,6 +957,131 @@ def transactions_page():
             "end",
             values=transact_data
         )
+
+
+    ################################## FILTERS #########################################
+    global from_date_transact_filter, to_date_transact_filter,min_amt_transact_filter, max_amt_transact_filter,transaction_type
+    tk.Label(
+            transacations_page_filter_frame,
+            text=f'Filters',
+            font=("Trebuchet MS", 14, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=0,column=0,padx=10,pady=5,sticky='w')
+
+    tk.Button(
+            transacations_page_filter_frame,
+            text="Reset",
+            width=10,
+            command=reset_filters_transact,
+            bg='#0a2d56', 
+            font=("Century Gothic", 10, "bold"),
+            fg='#fdc132',
+            relief='solid',  
+            borderwidth=1, 
+        ).grid(row=0, column=1,pady=5,sticky='w',padx=10)
+
+    tk.Label(
+                transacations_page_filter_frame,
+                text=f'Date Range',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=1,column=0,padx=10,pady=5,sticky='w',columnspan=2)
+    
+    from_date_transact_filter = tk.Entry(
+        transacations_page_filter_frame,
+        width=12,
+        bg='#E3D9F2', 
+        borderwidth=0,
+        fg='#1b1c1f',
+        insertbackground="#000000",
+        font=("Arial", 10, "bold"),
+    )
+    from_date_transact_filter.grid(row=2,column=0,padx=10,pady=5,sticky='w')
+
+    to_date_transact_filter = tk.Entry(
+            transacations_page_filter_frame,
+            width=12,
+            bg='#E3D9F2', 
+            borderwidth=0,
+            fg='#1b1c1f',
+            insertbackground="#000000",
+            font=("Arial", 10, "bold"),
+        )
+    to_date_transact_filter.grid(row=2,column=1,padx=10,pady=5,sticky='w')
+
+    tk.Label(
+                    transacations_page_filter_frame,
+                    text=f'Transaction Type',
+                    font=("Trebuchet MS", 12, "bold"),
+                    bg='#0a2d56',
+                    fg='#E3D9F2',
+                    anchor='center'
+                ).grid(row=3,column=0,padx=10,pady=5,sticky='w',columnspan=2)
+
+    transaction_type = ttk.Combobox(
+        transacations_page_filter_frame,
+        values=["All", "Deposit", "Withdraw", "Credit","Debit"],
+        state="readonly"
+            )
+    transaction_type.grid(row=4,column=0,padx=10,pady=5,sticky='w',columnspan=2)
+
+
+    tk.Label(
+            transacations_page_filter_frame,
+            text=f'Amount Range ',
+            font=("Trebuchet MS", 12, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=5,column=0,padx=10,pady=5,sticky='w',columnspan=2)
+        
+    min_amt_transact_filter = tk.Entry(
+        transacations_page_filter_frame,
+        width=12,
+        
+        bg='#E3D9F2', 
+        borderwidth=0,
+        fg='#1b1c1f',
+        insertbackground="#000000",
+        font=("Arial", 10, "bold"),
+    )
+    min_amt_transact_filter.grid(row=6,column=0,padx=10,pady=5,sticky='w')
+
+    max_amt_transact_filter = tk.Entry(
+            transacations_page_filter_frame,
+            width=12,
+            
+            bg='#E3D9F2', 
+            borderwidth=0,
+            fg='#1b1c1f',
+            insertbackground="#000000",
+            font=("Arial", 10, "bold"),
+        )
+    max_amt_transact_filter.grid(row=6,column=1,padx=10,pady=5,sticky='w')
+
+    tk.Button(
+                transacations_page_filter_frame,
+                text="Apply Filters",
+                width=10,
+                command=apply_filter,
+                bg='#0a2d56', 
+                font=("Century Gothic", 18, "bold"),
+                fg='#fdc132',
+                relief='solid',  
+                borderwidth=1, 
+            ).grid(row=7, column=0,pady=5,sticky='w',padx=10,columnspan=2)
+
+
+    
+    
+def apply_filter():
+        user_data.apply_filter(from_date_transact_filter,to_date_transact_filter,max_amt_transact_filter,min_amt_transact_filter,transaction_type,tree)
+    
+
 
 
     
@@ -979,6 +1109,12 @@ def transactions_page():
 
 
 
+def reset_filters_transact():
+    from_date_transact_filter.delete(0,tk.END)
+    to_date_transact_filter.delete(0,tk.END)
+    min_amt_transact_filter .delete(0,tk.END)
+    max_amt_transact_filter.delete(0,tk.END)
+    transaction_type.set('')
 
 
 
