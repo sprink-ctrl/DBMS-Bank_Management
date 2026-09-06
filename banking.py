@@ -3,13 +3,7 @@ from tkinter import messagebox
 from ui import root, db, crsr, navbar
 import user_data
 
-# -------------------------
-# banking.py stays a separate file. 'root', 'db', 'crsr' and 'navbar' are
-# imported from ui.py. 'user' and 'name' are accessed as user_data.user and
-# user_data.name (looked up at the point of use, not imported directly),
-# since login() in ui.py updates user_data.py only after banking.py has
-# already been imported.
-# -------------------------
+
 
 # -------------------------
 # Functions
@@ -24,8 +18,8 @@ def show_banking():
             widget.place_forget()
 
     navbar.place(relwidth=1)
-    profile_account_banking.place(relwidth=0.2, rely=0.13, relx=0.02, relheight=0.35)
-    account_profile_banking.place(relwidth=0.2, rely=0.5, relx=0.02, relheight=0.4)
+    profile_account_banking.place(relwidth=0.22,rely=0.13,relx=0.02,relheight=0.39)
+    account_profile_banking.place(relwidth=0.22,rely=0.58,relx=0.02,relheight=0.39)
     transfer_frame.place(relwidth=0.4, rely=0.13, relx=0.3, relheight=0.78)
 
     navbar.tkraise()
@@ -40,47 +34,39 @@ def confirm_transfer():
         messagebox.showwarning("Missing Information", "Please enter all fields.")
         return
 
-    # PLACEHOLDER: SQL - check account_no exists in accounts table
-    # crsr.execute(f'select account_no from accounts where account_no="{account_no}"')
-    # records = crsr.fetchall()
-    # if (account_no,) not in records:
-    #     messagebox.showwarning('', "Account does not exist")
-    #     return
+   
+    crsr.execute(f'select account_no from accounts where account_no="{account_no}"')
+    records = crsr.fetchall()
+    if (account_no,) not in records:
+        messagebox.showwarning('', "Account does not exist")
+        return
 
-    # PLACEHOLDER: SQL - verify account_no exists
-    # crsr.execute(f'select account_no from accounts where account_no="{account_no}"')
-    # target_records = crsr.fetchall()
-    # if (account_no,) not in target_records:
-    #     messagebox.showwarning('', "Account does not exist")
-    #     return
 
-    # PLACEHOLDER: SQL - fetch sender's account and balance
-    # crsr.execute(f'select account_no, balance from accounts where username="{user_data.user}"')
-    # sender_record = crsr.fetchall()[0]
-    # sender_account_no = sender_record[0]
-    # sender_balance = sender_record[1]
 
     # PLACEHOLDER: check sufficient balance
-    # if float(amount) > sender_balance:
-    #     messagebox.showwarning('', "Insufficient balance")
-    #     return
+    if float(amount) > user_data.accounts_table[3]:
+        messagebox.showwarning('', "Insufficient balance")
+        return
 
     # PLACEHOLDER: SQL - deduct amount from sender's account
-    # crsr.execute(f'update accounts set balance = balance - {float(amount)} where account_no="{sender_account_no}"')
+    crsr.execute(f'update accounts set balance = balance - {float(amount)} where account_no="{user_data.accounts_table[1]}"')
 
     # PLACEHOLDER: SQL - add amount to receiver's account
-    # crsr.execute(f'update accounts set balance = balance + {float(amount)} where account_no="{account_no}"')
-
+    crsr.execute(f'update accounts set balance = balance + {float(amount)} where account_no="{account_no}"')
+    a = user_data.accounts_table
+    crsr.execute(f"SELECT * from accounts where account_no = {account_no}")
+    b = crsr.fetchall()[0]
     # PLACEHOLDER: SQL - insert transaction record(s) into transactions table
-    # crsr.execute(f'insert into transactions (username, account_no, transaction_type, amount, from_account, to_account, description, timestamp) values ("{user_data.user}","{sender_account_no}","TRANSFER",{float(amount)},"{sender_account_no}","{account_no}","{description}",CURRENT_TIMESTAMP)')
-
-    # PLACEHOLDER: db.commit()
+    crsr.execute(f'insert into transactions values ("{a[0]}","{a[1]}","DEBIT",{float(amount)},{float(a[3])-float(amount)},"{a[1]}","{account_no}","SUCCESS","{description}",CURRENT_TIMESTAMP)')
+    crsr.execute(f'insert into transactions values ("{b[0]}","{account_no}","CREDIT",{float(amount)},{float(b[3])+float(amount)},"{a[1]}","{account_no}","SUCCESS","{description}",CURRENT_TIMESTAMP)')
+    db.commit()
 
     messagebox.showinfo("Success", "Transfer completed successfully!")
 
     transfer_account_no.delete(0, tk.END)
     transfer_amount.delete(0, tk.END)
     transfer_description.delete(0, tk.END)
+    user_data.initialize(a[0])
 
 
 # -------------------------
@@ -91,55 +77,101 @@ profile_account_banking = tk.Frame(root, bg="#0a2d56")
 account_profile_banking = tk.Frame(root, bg="#0a2d56")
 
 
+
 def banking_left_widget():
-    # PLACEHOLDER: SQL - fetch user details
-    # crsr.execute(f' SELECT * from users where username="{user_data.user}"')
-    # a = crsr.fetchall()
 
     tk.Label(
-        profile_account_banking,
-        text='USER PROFILE',
-        font=("Trebuchet MS", 15, "bold"),
-        bg='#0a2d56',
-        fg='#fdc132',
-        anchor='center'
-    ).grid(row=0, column=0, columnspan=2, padx=10, pady=(10, 0), sticky='w')
+                profile_account_banking,
+                text='USER PROFILE',
+                font=("Trebuchet MS", 13, "bold"),
+                bg='#0a2d56',
+                fg='#fdc132',
+                anchor='center'
+            ).grid(row=0,column=0,columnspan=2,padx=10,pady=(10,0),sticky='w')
+    tk.Label(
+            profile_account_banking,
+            text='🤵',
+            font=("Trebuchet MS", 40, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=1,column=0,columnspan=2,padx=10,pady=(10,0),sticky='nsew')
 
     tk.Label(
-        profile_account_banking,
-        text='🤵',
-        font=("Trebuchet MS", 60, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='center'
-    ).grid(row=1, column=0, columnspan=2, padx=10, pady=(10, 0), sticky='nsew')
+            profile_account_banking,
+            text=f'{user_data.user_table[1]}',
+            font=("Trebuchet MS", 20, "bold"),
+            bg='#0a2d56',
+            fg='#E3D9F2',
+            anchor='center'
+        ).grid(row=2,column=0,columnspan=2,padx=10,pady=(5,5),sticky='nsew')
 
     tk.Label(
-        profile_account_banking,
-        text=f'{user_data.user_table[1]}',
-        font=("Trebuchet MS", 18, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='center'
-    ).grid(row=2, column=0, columnspan=2, padx=10, pady=(5, 5), sticky='nsew')
-
+                profile_account_banking,
+                text=f'Username:',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=3,column=0,padx=10,pady=(10,5),sticky='nw')
     tk.Label(
-        profile_account_banking,
-        text='Username:',
-        font=("Trebuchet MS", 12, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='center'
-    ).grid(row=3, column=0, padx=10, pady=(10, 5), sticky='w')
-
+                profile_account_banking,
+                text=f'{user_data.user_table[0]}',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=3,column=1,padx=10,pady=(10,5),sticky='w')
     tk.Label(
-        profile_account_banking,
-        text=f'{user_data.user_table[0]}',
-        font=("Trebuchet MS", 12, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='center'
-    ).grid(row=3, column=1, padx=10, pady=(10, 5), sticky='w')
+                profile_account_banking,
+                text=f'Phone:',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=4,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account_banking,
+                text=f'{user_data.user_table[3]}',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=4,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account_banking,
+                text=f'Email:',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=5,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account_banking,
+                text=f'{user_data.user_table[2]}',
+                font=("Trebuchet MS", 8, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=5,column=1,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account_banking,
+                text=f'Date of Birth:',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=6,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                profile_account_banking,
+                text=f'{user_data.user_table[5]}',
+                font=("Trebuchet MS", 12, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=6,column=1,padx=10,pady=(10,5),sticky='w')
+    
+
 
     #####################################################################################
 
@@ -148,58 +180,60 @@ def banking_left_widget():
     # a = crsr.fetchall()
 
     tk.Label(
-        account_profile_banking,
-        text='ACCOUNT PROFILE',
-        font=("Trebuchet MS", 15, "bold"),
-        bg='#0a2d56',
-        fg='#fdc132',
-        anchor='center'
-    ).grid(row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky='w')
+                    account_profile_banking,
+                    text=f'ACCOUNT PROFILE',
+                    font=("Trebuchet MS", 14, "bold"),
+                    bg='#0a2d56',
+                    fg='#fdc132',
+                    anchor='center'
+                ).grid(row=0,column=0,padx=10,pady=(10,5),sticky='w')
+    
+    tk.Label(
+                account_profile_banking,
+                text=f'🏦{user_data.accounts_table[2].capitalize()} Account',
+                font=("Trebuchet MS", 16, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=1,column=0,padx=10,pady=(10,5),sticky='w')
+    tk.Label(
+                account_profile_banking,
+                text=f'{user_data.accounts_table[1]}',
+                font=("Trebuchet MS", 10, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='center'
+            ).grid(row=2,column=0,padx=10,pady=(10,0),sticky='w')
+
+    if user_data.accounts_table[4] == 'ACTIVE':
+        color_status='#00FF00'
+    else:
+        color_status='#FF7F7F'
+    tk.Label(
+                    account_profile_banking,
+                    text=f'{user_data.accounts_table[4]}',
+                    font=("Trebuchet MS", 8, "bold"),
+                    bg='#0a2d56',
+                    fg=color_status,
+                    anchor='center'
+                ).grid(row=3,column=0,padx=10,pady=(0,5),sticky='w')
 
     tk.Label(
-        account_profile_banking,
-        text='🏦Account Type',
-        font=("Trebuchet MS", 16, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='w'
-    ).grid(row=1, column=0, columnspan=2, padx=10, pady=(10, 5), sticky='w')
-
+                account_profile_banking,
+                text=f'Available Balance',
+                font=("Trebuchet MS", 14, "bold"),
+                bg='#0a2d56',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=4,column=0,padx=10,pady=(5,5),sticky='w')
     tk.Label(
-        account_profile_banking,
-        text='Account Number',
-        font=("Trebuchet MS", 10, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='w'
-    ).grid(row=2, column=0, columnspan=2, padx=10, pady=(10, 0), sticky='w')
-
-    tk.Label(
-        account_profile_banking,
-        text='Status',
-        font=("Trebuchet MS", 8, "bold"),
-        bg='#0a2d56',
-        fg='#00FF00',
-        anchor='w'
-    ).grid(row=3, column=0, columnspan=2, padx=10, pady=(0, 5), sticky='w')
-
-    tk.Label(
-        account_profile_banking,
-        text='Available Balance',
-        font=("Trebuchet MS", 12, "bold"),
-        bg='#0a2d56',
-        fg='#E3D9F2',
-        anchor='w'
-    ).grid(row=4, column=0, columnspan=2, padx=10, pady=(10, 0), sticky='w')
-
-    tk.Label(
-        account_profile_banking,
-        text='₹0.00',
-        font=("Trebuchet MS", 20, "bold"),
-        bg='#0a2d56',
-        fg='#00FF00',
-        anchor='w'
-    ).grid(row=5, column=0, columnspan=2, padx=10, pady=(0, 5), sticky='w')
+                    account_profile_banking,
+                    text=f'₹{user_data.accounts_table[3]}',
+                    font=("Trebuchet MS", 16, "bold"),
+                    bg='#0a2d56',
+                    fg='#00FF00',
+                    anchor='w'
+                ).grid(row=5,column=0,padx=10,pady=(5,5),sticky='w')
 
 
 # -------------------------
