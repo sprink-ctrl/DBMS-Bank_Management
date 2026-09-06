@@ -11,7 +11,8 @@ import user_data
 
 def show_banking():
     banking_left_widget()
-    transfer_form_widget()
+    recent_contacts_widget()
+    
 
     for widget in root.winfo_children():
         if widget.winfo_class() == 'Frame':
@@ -20,7 +21,8 @@ def show_banking():
     navbar.place(relwidth=1)
     profile_account_banking.place(relwidth=0.22,rely=0.13,relx=0.02,relheight=0.39)
     account_profile_banking.place(relwidth=0.22,rely=0.58,relx=0.02,relheight=0.39)
-    transfer_frame.place(relwidth=0.4, rely=0.13, relx=0.3, relheight=0.78)
+    transfer_frame.place(relwidth=0.30, rely=0.13, relx=0.3, relheight=0.78)
+    recent_contacts_frame.place(relwidth=0.25, rely=0.13, relx=0.7, relheight=0.78)
 
     navbar.tkraise()
 
@@ -67,6 +69,7 @@ def confirm_transfer():
     transfer_amount.delete(0, tk.END)
     transfer_description.delete(0, tk.END)
     user_data.initialize(a[0])
+    show_banking()
 
 
 # -------------------------
@@ -243,8 +246,6 @@ def banking_left_widget():
 transfer_frame = tk.Frame(root, bg='#043565', borderwidth=0, relief="groove")
 
 
-def transfer_form_widget():
-    pass
 
 
 tk.Label(
@@ -252,7 +253,7 @@ tk.Label(
     text="Transfer Money",
     font=("Trebuchet MS", 22, "bold"),
     bg='#043565',
-    fg='#E3D9F2',
+    fg='#fdc132',
     anchor='w'
 ).grid(row=0, column=0, columnspan=2, pady=(10, 20), padx=20, sticky='w')
 
@@ -329,8 +330,218 @@ tk.Button(
 ).grid(row=7, column=0, columnspan=2, pady=30, padx=20)
 
 
+
+
+
+
 # -------------------------
-# In ui.py: add 'import banking' right before root.mainloop() (after navbar
-# and all widgets are built), and point the navbar's "Banking💵" button's
-# command to banking.show_banking instead of show_dashboard.
+# Recent Contacts Frame (right side of Banking page)
 # -------------------------
+
+recent_contacts_frame = tk.Frame(root, bg='#043565', borderwidth=0, relief="groove")
+
+
+
+def copy_to_clipboard(account_no):
+    root.clipboard_clear()
+    root.clipboard_append(account_no)
+    root.update()
+
+
+def recent_contacts_widget():
+
+
+    for widget in recent_contacts_frame.winfo_children():
+        widget.destroy()
+
+    tk.Label(
+        recent_contacts_frame,
+        text="Recent Contacts",
+        font=("Trebuchet MS", 18, "bold"),
+        bg='#043565',
+        fg='#fdc132',
+        anchor='w'
+    ).grid(row=0, column=0, columnspan=2, pady=(10, 20), padx=20, sticky='w')
+
+    global other_accounts
+    other_accounts = []
+
+    for row in user_data.transactions_table:
+        transaction_type = row[2]
+        from_account = row[5]
+        to_account = row[6]
+
+        if transaction_type == "DEBIT":
+            other_account = to_account
+        elif transaction_type == "CREDIT":
+            other_account = from_account
+
+        if other_account not in other_accounts:
+            other_accounts.append(other_account)
+
+        if len(other_accounts) == 3:
+            break
+
+    current_row = 1
+    global total_records
+    total_records=[]
+    for other_account in other_accounts:
+
+        crsr.execute(f'select username from accounts where account_no="{other_account}"')
+        account_owner_records = crsr.fetchall()
+
+        other_username = account_owner_records[0][0]
+
+        crsr.execute(f'select name, email from users where username="{other_username}"')
+        user_records = crsr.fetchall()
+
+        other_name = user_records[0][0]
+        other_email = user_records[0][1]
+
+        total_records.append([other_username,other_name,other_email,other_account])
+
+
+    def copy_clip_1():
+        copy_to_clipboard(total_records[0][3])
+    def copy_clip_2():
+        copy_to_clipboard(total_records[1][3])
+    def copy_clip_3():
+        copy_to_clipboard(total_records[2][3])
+
+    if len(total_records) >0:
+
+        tk.Label(
+            recent_contacts_frame,
+            text=f'{total_records[0][1]}',
+            font=("Trebuchet MS", 16, "bold"),
+            bg='#043565',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=current_row, column=0, columnspan=2, padx=20, pady=(15, 0), sticky='w')
+        current_row = current_row + 1
+
+        tk.Label(
+            recent_contacts_frame,
+            text=f'{total_records[0][2]}',
+            font=("Century Gothic", 12, "bold"),
+            bg='#043565',
+            fg='#86ADE5',
+            anchor='w'
+        ).grid(row=current_row, column=0, columnspan=2, padx=20, sticky='w')
+        current_row = current_row + 1
+
+        tk.Label(
+            recent_contacts_frame,
+            text=f'{total_records[0][3]}',
+            font=("Century Gothic", 12, "bold"),
+            bg='#043565',
+            fg='#E3D9F2',
+            anchor='w'
+        ).grid(row=current_row, column=0, padx=(20, 5), sticky='w')
+
+        tk.Button(
+            recent_contacts_frame,
+            text="📋",
+            command=copy_clip_1,
+            bg='#043565',
+            fg='#E3D9F2',
+            relief='flat',
+            borderwidth=0,
+            activebackground='#043565',
+            font=("Century Gothic", 12, "bold"),
+        ).grid(row=current_row, column=1, padx=(0, 20), sticky='w')
+        current_row = current_row + 1
+
+
+    if len(total_records) >1:
+    
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[1][1]}',
+                font=("Trebuchet MS", 16, "bold"),
+                bg='#043565',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=current_row, column=0, columnspan=2, padx=20, pady=(15, 0), sticky='w')
+            current_row = current_row + 1
+    
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[1][2]}',
+                font=("Century Gothic", 12, "bold"),
+                bg='#043565',
+                fg='#86ADE5',
+                anchor='w'
+            ).grid(row=current_row, column=0, columnspan=2, padx=20, sticky='w')
+            current_row = current_row + 1
+    
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[1][3]}',
+                font=("Century Gothic", 12, "bold"),
+                bg='#043565',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=current_row, column=0, padx=(20, 5), sticky='w')
+    
+            tk.Button(
+                recent_contacts_frame,
+                text="📋",
+                command=copy_clip_2,
+                bg='#043565',
+                fg='#E3D9F2',
+                relief='flat',
+                borderwidth=0,
+                font=("Century Gothic", 12, "bold"),
+                activebackground='#043565'
+            ).grid(row=current_row, column=1, padx=(0, 20), sticky='w')
+            current_row = current_row + 1
+
+
+    if len(total_records) >2:
+        
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[2][1]}',
+                font=("Trebuchet MS", 16, "bold"),
+                bg='#043565',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=current_row, column=0, columnspan=2, padx=20, pady=(15, 0), sticky='w')
+            current_row = current_row + 1
+    
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[2][2]}',
+                font=("Century Gothic", 12, "bold"),
+                bg='#043565',
+                fg='#86ADE5',
+                anchor='w'
+            ).grid(row=current_row, column=0, columnspan=2, padx=20, sticky='w')
+            current_row = current_row + 1
+    
+            tk.Label(
+                recent_contacts_frame,
+                text=f'{total_records[2][3]}',
+                font=("Century Gothic", 12, "bold"),
+                bg='#043565',
+                fg='#E3D9F2',
+                anchor='w'
+            ).grid(row=current_row, column=0, padx=(20, 5), sticky='w')
+    
+            tk.Button(
+                recent_contacts_frame,
+                text="📋",
+                command=copy_clip_3,
+                font=("Century Gothic", 12, "bold"),
+                bg='#043565',
+                fg='#E3D9F2',
+                relief='flat',
+                borderwidth=0,
+                activebackground='#043565'
+            ).grid(row=current_row, column=1, padx=(0, 20), sticky='w')
+            current_row = current_row + 1
+
+
+
+

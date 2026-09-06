@@ -10,6 +10,7 @@ db = mysql.connector.connect(
 crsr = db.cursor()
 
 def initialize(user):
+    db.commit()
     global user_table,accounts_table,transactions_table
     crsr.execute(f"SELECT * from users where username='{user}'")
     user_table = crsr.fetchall()[0]
@@ -22,6 +23,7 @@ def initialize(user):
 
     
 def apply_filter(from_date_transact_filter,to_date_transact_filter,max_amt_transact_filter,min_amt_transact_filter,transaction_type,tree):
+    db.commit()
     from_date = from_date_transact_filter.get()
     to_date = to_date_transact_filter.get()
     min_amt=min_amt_transact_filter.get()

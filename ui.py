@@ -504,11 +504,12 @@ tk.Button(
     activebackground='#043565'
 ).grid(row=0, column=3,  pady=15,sticky='w',padx=50)
 
+import analysis
 tk.Button(
     navbar,
     text="Analytics📈",
     width=10,
-    command=show_dashboard,
+    command=analysis.show_analysis,
     bg='#043565',
     font=("Century Gothic", 18, "bold"),
     fg='#E3D9F2',
