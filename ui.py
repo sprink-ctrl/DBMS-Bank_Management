@@ -74,20 +74,20 @@ def show_adminlogin():
 def show_accounts():
     accounts_page()
     for widget in root.winfo_children():
-        if widget.winfo_class() == 'Frame':
-            widget.place_forget()
+
+        widget.place_forget()
     navbar.place(relwidth=1)
     profile_account.place(relwidth=0.3,rely=0.13,relx=0.02,relheight=0.78)
     account_profile.place(relwidth=0.65,rely=0.13,relx=0.33,relheight=0.3)
     account_details.place(relwidth=0.65,rely=0.47,relx=0.33,relheight=0.29)
+    edit_account.place(relwidth=0.65,rely=0.768,relx=0.33,relheight=0.12)
     profile_account.tkraise()
 
 
 def show_transactions():
     transactions_page()
     for widget in root.winfo_children():
-            if widget.winfo_class() == 'Frame':
-                widget.place_forget()
+        widget.place_forget()
     navbar.place(relwidth=1)
     account_profile_transactions.place(relwidth=0.16,rely=0.13,relx=0.00,relheight=0.37)
     transactions_page_frame.place(relwidth=0.8,rely=0.13,relx=0.2,relheight=0.78)
@@ -99,6 +99,15 @@ def admin_login_successful():
 
 def banking_fn():
     banking.show_banking()
+
+def show_edit_details():
+    for widget in root.winfo_children():
+            if widget.winfo_class() == 'Frame':
+                widget.place_forget()
+    edit_widget()
+    edit_account_frame.place(relx=0.5, rely=0.43, anchor="center")
+    frame_border.place(height=500,width=1000,relx=0.5, rely=0.45,anchor="center")
+    edit_account_frame.tkraise()
 
 #endregion
 
@@ -218,6 +227,9 @@ tk.Label(
 
 def check_username_validity(event):
     auth.check_username_validity(register_username)
+
+def check_username_validity_editing(event):
+    auth.check_username_validity_editing(register_username)
 
 tk.Label(register_frame, text="Username", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=1, column=0, sticky='w',padx=40)
 register_username = tk.Entry(register_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
@@ -527,9 +539,14 @@ tk.Button(
 profile_account = tk.Frame(root, bg="#0a2d56",)
 account_profile = tk.Frame(root, bg="#0a2d56",)
 account_details = tk.Frame(root, bg="#0a2d56",)
+edit_account = tk.Frame(root, bg="#0a2d56",)
 
 #region accounts_page
 def accounts_page():
+    for frame in (profile_account, account_profile, account_details, edit_account):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
     tk.Label(
                 profile_account,
                 text='USER PROFILE',
@@ -815,8 +832,129 @@ def accounts_page():
                         fg='#E3D9F2',
                         anchor='w'
                     ).grid(row=2,column=4,padx=(40,0),pady=(10,5),sticky='w')
+
+
+    #################################
     
-    
+    tk.Button(
+                edit_account,
+                text="Edit Account ✍️",
+                width=15,
+                command=show_edit_details,
+                bg='#0a2d56', 
+                font=("Century Gothic", 20, "bold"),
+                fg='#fdc132',
+                relief='solid',  
+                borderwidth=0,
+                anchor='center' 
+            ).grid(row=0, column=2,columnspan=4,pady=35,sticky='nsew',padx=12)
+edit_account_frame = tk.Frame(root, bg="#0a2d56",)
+
+
+
+def edit_widget():
+    import user_data
+    global register_username,register_name,register_email,register_dob,register_phone,register_address,register_password,register_confirm
+    for widget in edit_account_frame.winfo_children():
+        if widget.winfo_class() in ('Label', 'Entry'):
+            widget.destroy()
+
+    tk.Label(edit_account_frame, text="Username", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=1, column=0, sticky='w',padx=40)
+    register_username = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_username.grid(row=2, column=0, pady=5, ipady=4,padx=40)
+    register_username.insert(0, user_data.user_table[0])
+
+    tk.Label(edit_account_frame, text="Name", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=1, column=1, sticky='w',padx=40)
+    register_name = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_name.grid(row=2, column=1, pady=5, ipady=4,padx=40)
+    register_name.bind("<Button-1>",check_username_validity_editing)
+    register_name.insert(0, user_data.user_table[1])
+
+    tk.Label(edit_account_frame, text="Email ID", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=3, column=0, sticky='w',padx=40)
+    register_email = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_email.grid(row=4, column=0, pady=5, ipady=4,padx=40)
+    register_email.bind("<Button-1>",check_username_validity_editing)
+    register_email.insert(0, user_data.user_table[2])
+
+    tk.Label(edit_account_frame, text="Date of Birth(YYYY-MM-DD)", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=3, column=1, sticky='w',padx=40)
+    register_dob = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_dob.grid(row=4, column=1, pady=5, ipady=4,padx=40)
+    register_dob.insert(0, user_data.user_table[5])
+
+    tk.Label(edit_account_frame, text="Phone Number", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=5, column=0, sticky='w',padx=40)
+    register_phone = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_phone.grid(row=6, column=0, pady=5, ipady=4,padx=40)
+    register_phone.insert(0, user_data.user_table[3])
+
+    tk.Label(edit_account_frame, text="Address", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=5, column=1, sticky='w',padx=40)
+    register_address = tk.Entry(edit_account_frame, width=37, bg='#E3D9F2', borderwidth=0, fg='#1b1c1f', insertbackground="#000000", font=("Arial", 10, "bold"))
+    register_address.grid(row=6, column=1, pady=5, ipady=4,padx=40)
+    register_address.insert(0, user_data.user_table[4])
+
+
+    tk.Label(edit_account_frame, text="Password", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=7, column=0,  sticky='w',padx=40)
+    register_password = tk.Entry(edit_account_frame,width=37,show="*",bg='#E3D9F2',borderwidth=0,fg='#1b1c1f',insertbackground="#000000",font=("Arial", 10, "bold"),)
+    register_password.grid(row=8, column=0, pady=5, ipady=4,padx=40)
+    register_password.insert(0, user_data.user_table[6])
+
+    tk.Label(edit_account_frame, text="Confirm Password", bg='#043565', fg='#E3D9F2', font=("Century Gothic", 10, "bold"), anchor='w').grid(row=7, column=1, sticky='w',padx=40)
+    register_confirm = tk.Entry(edit_account_frame,width=37,show="*",bg='#E3D9F2',borderwidth=0,fg='#1b1c1f',insertbackground="#000000",font=("Arial", 10, "bold"),)
+    register_confirm.grid(row=8, column=1, pady=5, ipady=4,padx=40)
+    register_confirm.insert(0, user_data.user_table[6])
+
+def edit_details():
+    global register_username,register_name,register_email,register_dob,register_phone,register_address,register_password,register_confirm
+    auth.edit_details(register_username,register_name,register_email,register_dob,register_phone,register_address,register_password,register_confirm)
+
+tk.Button(
+    edit_account_frame,
+    text="Confirm Edit",
+    width=20,
+    command=edit_details,
+    bg='#E3D9F2',
+    font=("Century Gothic", 10, "bold"),
+    fg='#000000',
+    relief='solid',
+    borderwidth=0,
+).grid(row=9, column=0,  pady=15)
+
+tk.Button(
+    edit_account_frame,
+    text="Back to Accounts",
+    command=show_accounts,
+    bg='#E3D9F2',
+    font=("Century Gothic", 10, "bold"),
+    fg='#000000',
+    relief='solid',
+    borderwidth=0,
+    width=20
+).grid(row=9, column=1, pady=15)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endregion accounts_page
 
 account_profile_transactions= tk.Frame(root, bg="#0a2d56",)

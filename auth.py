@@ -129,3 +129,52 @@ def register(register_username,register_name,register_email,register_dob,registe
     register_phone.delete(0, tk.END)
     register_dob.delete(0, tk.END)
     
+
+def check_username_validity_editing(register_username):
+    crsr.execute('select username from users')
+    user_records = crsr.fetchall()
+    username = register_username.get()
+    import user_data
+    if (username,) in user_records and username!=user_data.user_table[0]:
+        messagebox.showwarning('',"Username already exists.")
+        return False
+    else:
+        return True
+
+
+def edit_details(register_username,register_name,register_email,register_dob,register_phone,register_address,register_password,register_confirm):
+    a = check_username_validity_editing(register_username)
+    if a ==True:
+        username = register_username.get()
+        name = register_name.get()
+        email = register_email.get()
+        phone = register_phone.get()
+        address= register_address.get()
+        dob = register_dob.get()
+        password = register_password.get()
+        confirm = register_confirm.get()
+        try:
+            if '' not in [username,name,email,dob,phone,address,password,confirm]:
+                if password==confirm:
+                    if len(phone)==10 and phone.isdigit():
+                        import user_data
+                        crsr.execute(f' UPDATE users SET username="{username}",name="{name}",email="{email}",phone="{phone}",address="{address}",dob="{dob}",password="{password}" WHERE username="{user_data.user_table[0]}"')
+
+                        messagebox.showinfo("Success", "Account updated successfully!")
+                        db.commit()
+                        user_data.initialize(username)
+                        import ui
+                        ui.show_accounts()
+                    else:
+                        messagebox.showwarning('',"Invalid Phone Number")
+                else:
+                    messagebox.showwarning('',"Passwords do not match")
+            else:
+                messagebox.showwarning('',"Fields cannot be empty")
+        except:
+            messagebox.showwarning('',"Something went wrong. Try checking date format")
+    if a==False:
+        messagebox.showwarning('',"Username already exists.")
+
+    print(a,8)
+    # Clear fields

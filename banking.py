@@ -15,7 +15,6 @@ def show_banking():
     
 
     for widget in root.winfo_children():
-        if widget.winfo_class() == 'Frame':
             widget.place_forget()
 
     navbar.place(relwidth=1)
@@ -82,6 +81,9 @@ account_profile_banking = tk.Frame(root, bg="#0a2d56")
 
 
 def banking_left_widget():
+    for frame in (profile_account_banking, account_profile_banking):
+        for widget in frame.winfo_children():
+            widget.destroy()
 
     tk.Label(
                 profile_account_banking,

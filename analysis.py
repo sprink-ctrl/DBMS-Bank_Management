@@ -258,7 +258,7 @@ def load_stats():
     if avg_transaction is None:
         avg_transaction = 0
     
-    round(avg_transaction,2)
+    avg_transaction=round(avg_transaction,2)
 
     tk.Label(
         avg_frame,
